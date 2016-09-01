@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<style>
+		*{margin:0;padding:0;list-style: none;}
+		body{background: #000;text-align:center;}
+		canvas{background: url(img/game_bg_2_hd.jpg);}
+	</style>
+	<script src="js/fishone.js"></script>
+	<script src="js/resource.js"></script>
+	<script src="js/fish.js"></script>
+	<script src="js/cannon.js"></script>
+	<script>			
+		window.onload=function()
+		{
+			var oC=document.querySelector('#c1');
+			var gd=oC.getContext('2d');
+			loadImage(resource,function(){
+				//画大炮
+				var c=new Cannon(7);
+				setInterval(function(){
+					gd.clearRect(0,0,oC.width,oC.height);
+					//画炮台
+					gd.drawImage(JSON['bottom'],
+						0,0,765,70,
+						0,oC.height-70,765,70
+					);
+					c.draw(gd);
+				},16);
+				//开火
+				oC.onclick=function(ev)
+				{
+					var x=ev.clientX-c.x-oC.offsetLeft;
+					var y=c.y+oC.offsetTop-ev.clientY;
+					var d=90-a2d(Math.atan2(y,x));
+					c.rotate=d;
+					c.fire();
+				}				
+			});
+		};
+	</script>
+</head>
+<body>
+	<canvas id="c1" width="800" height="600"></canvas>
+</body>
+</html>

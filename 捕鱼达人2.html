@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<style>
+		*{margin:0;padding:0;list-style: none;}
+		body{background: #000;text-align:center;}
+		canvas{background: url(img/game_bg_2_hd.jpg);}
+	</style>
+	<script>
+		function loadImage(arr,fnSucc,fnLoading)
+		{
+			var count=0;
+			for(var i=0;i<arr.length;i++)
+			{
+				var oImg=new Image();
+				oImg.onload=function()
+				{
+					count++;
+					fnLoading&&fnLoading(count,arr.length);
+					if(count==arr.length)
+					{
+						fnSucc&&fnSucc();
+					}
+				};
+				oImg.src='img/'+arr[i]+'.png';
+			}
+		}
+		window.onload=function()
+		{
+			var oC=document.querySelector('#c1');
+			var gd=oC.getContext('2d');
+			loadImage(['fish1','fish2','fish3','fish4','fish5'],function(){
+				alert('导入素材成功')
+			},function(count,length){
+				//可以加一个进度条
+			})
+		}
+	</script>
+</head>
+<body>
+	<canvas id="c1" width="800" height="600"></canvas>
+</body>
+</html>

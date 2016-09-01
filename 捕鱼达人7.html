@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<style>
+		*{margin:0;padding:0;list-style: none;}
+		body{background: #000;text-align:center;}
+		canvas{background: url(img/game_bg_2_hd.jpg);}
+	</style>
+	<script src="js/fishone.js"></script>
+	<script src="js/resource.js"></script>
+	<script src="js/fish.js"></script>
+	<script src="js/cannon.js"></script>
+	<script src="js/bullet.js"></script>
+	<script src="js/coin.js"></script>
+	<script src="js/diefish.js"></script>
+	<script>
+		function Web(type)
+		{
+			this.x=0;
+			this.y=0;
+			this.scale=1;
+		}
+		Web.prototype.draw=function(gd)
+		{
+			gd.save();
+			gd.translate(this.x,this.y);
+			gd.scale(this.scale,this.scale);
+			gd.drawImage(JSON['web'],
+				21,21,200,200,
+				-100,-100,200,200
+			)
+			gd.restore();
+		}
+		window.onload=function()
+		{
+			var oC=document.querySelector('#c1');
+			var gd=oC.getContext('2d');
+			var out=100;
+			loadImage(resource,function(){
+				//存炮弹
+				var arrBullet=[];
+				//存鱼
+				var arrFish=[];
+				//存金币
+				var arrCoin=[];
+				//存死鱼
+				var arrDiefish=[];
+				//存网
+				var arrWeb=[];
+				//画大炮
+				var c=new Cannon(7);
+				setInterval(function(){
+					gd.clearRect(0,0,oC.width,oC.height);
+					//生成鱼
+					if(Math.random()<0.1)
+					{
+						var f=new Fish(rnd(1,6));
+						if(Math.random()<0.5){
+							f.x=-out;
+							f.rotate=rnd(-45,45);
+						}else{
+							f.x=oC.width;
+							f.rotate=rnd(135,225);
+						}
+						f.y=rnd(100,oC.height-100);
+						arrFish.push(f);
+					}
+					//画鱼
+					for(var i=0;i<arrFish.length;i++)
+					{
+						arrFish[i].draw(gd);
+					}
+					//画炮台
+					gd.drawImage(JSON['bottom'],
+						0,0,765,70,
+						0,oC.height-70,765,70
+					);
+					//画大炮
+					c.draw(gd);
+					//画炮弹
+					for(var i=0;i<arrBullet.length;i++)
+					{
+						arrBullet[i].draw(gd);
+					}
+					//画金币
+					for(var i=0;i<arrCoin.length;i++)
+					{
+						arrCoin[i].draw(gd)
+					}
+					//画死鱼
+					for(var i=0;i<arrDiefish.length;i++)
+					{
+						arrDiefish[i].draw(gd)
+					}
+					//画网
+					for(var i=0;i<arrWeb.length;i++)
+					{
+						arrWeb[i].draw(gd);
+						arrWeb[i].scale+=0.02;
+						if(arrWeb[i].scale>=1.2)
+						{
+							arrWeb.splice(i,1)
+							i--;
+						}
+					}
+					//判断是否打中鱼
+					for(var i=0;i<arrFish.length;i++)
+					{
+						for(var j=0;j<arrBullet.length;j++)
+						{
+							if(arrFish[i].isIn(arrBullet[j].x,arrBullet[j].y)){
+								var type=arrFish[i].type;
+								var x=arrFish[i].x;
+								var y=arrFish[i].y;
+								var rotate=arrFish[i].rotate;
+								//鱼死了
+								arrFish.splice(i,1)
+								i--;
+								//子弹消失
+								arrBullet.splice(j,1)
+								j--;
+								//生成金币
+								var coin=new Coin(type);
+								coin.x=x;
+								coin.y=y;
+								arrCoin.push(coin);
+								//生成死鱼
+								var diefish=new Diefish(type);
+								diefish.x=x;
+								diefish.y=y;
+								diefish.rotate=rotate;
+								arrDiefish.push(diefish);
+								setTimeout(function(){
+									arrDiefish.splice(diefish,1)
+								},400);
+								//生成网
+								var web=new Web();
+								web.x=x;
+								web.y=y;
+								arrWeb.push(web);
+							}
+						}
+					}
+					//性能优化,干掉没用的炮弹
+					for(var i=0;i<arrBullet.length;i++)
+					{
+						if(arrBullet[i].x<0||arrBullet[i].y<0||arrBullet[i].x>oC.width||arrBullet[i].y>oC.height){
+							arrBullet.splice(i,1)
+							i--;
+						}
+					}
+					//性能优化,干掉没用的鱼
+					for(var i=0;i<arrFish.length;i++)
+					{
+						if(arrFish[i].x<-out||arrFish[i].y<-out||arrFish[i].x>oC.width+out||arrFish[i].y>oC.height+out){
+							arrFish.splice(i,1)
+							i--;
+						}
+					}
+				},16);
+				//开火
+				oC.onclick=function(ev)
+				{
+					var x=ev.clientX-c.x-oC.offsetLeft;
+					var y=c.y+oC.offsetTop-ev.clientY;
+					var d=90-a2d(Math.atan2(y,x));
+					c.rotate=d;
+					c.fire();
+					//生成炮弹
+					var bullet=new Bullet(c.type);
+					bullet.x=c.x;
+					bullet.y=c.y;
+					bullet.rotate=c.rotate;
+					arrBullet.push(bullet);
+				}				
+			});
+		};
+	</script>
+</head>
+<body>
+	<canvas id="c1" width="800" height="600"></canvas>
+</body>
+</html>

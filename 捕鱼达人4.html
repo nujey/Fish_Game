@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<style>
+		*{margin:0;padding:0;list-style: none;}
+		body{background: #000;text-align:center;}
+		canvas{background: url(img/game_bg_2_hd.jpg);}
+	</style>
+	<script src="js/fishone.js"></script>
+	<script src="js/resource.js"></script>
+	<script>
+		var FISH_SIZE=[
+            null,
+            {w: 55, h: 37},
+            {w: 78, h: 64},
+            {w: 72, h: 56},
+            {w: 77, h: 59},
+            {w: 107, h: 122}
+        ];		
+		window.onload=function()
+		{
+			var oC=document.querySelector('#c1');
+			var gd=oC.getContext('2d');
+			loadImage(resource,function(){
+				gd.drawImage(JSON['fish5'],
+					0,0,107,110,
+					100,100,107,110
+				);
+			});
+		};
+	</script>
+</head>
+<body>
+	<canvas id="c1" width="800" height="600"></canvas>
+</body>
+</html>

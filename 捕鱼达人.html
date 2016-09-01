@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<style>
+		*{margin:0;padding:0;list-style: none;}
+		body{background: #000;text-align:center;}
+		canvas{background: url(img/game_bg_2_hd.jpg);}
+	</style>
+	<script>
+		window.onload=function()
+		{
+			var oC=document.querySelector('#c1');
+			var gd=oC.getContext('2d');
+			var oImg=new Image();
+			oImg.onload=function()
+			{
+				gd.drawImage(oImg,
+					0,0,107,110,
+					100,100,107,110
+				)
+			}
+			oImg.src='img/fish5.png';
+		}
+	</script>
+</head>
+<body>
+	<canvas id="c1" width="800" height="600"></canvas>
+</body>
+</html>
